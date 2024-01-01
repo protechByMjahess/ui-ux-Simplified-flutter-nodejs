@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -7,36 +6,66 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-
-    // Simulate loading for 3 seconds
-    Future.delayed(Duration(seconds: 3), () {
-      Navigator.pushReplacementNamed(context, '/home');
-    });
-  }
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[900],
-      body: Center(
+      appBar: AppBar(
+        title: Text('Login Screen'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              width: 150,
-              height: 150,
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.amberAccent[200]!),
-                strokeWidth: 10.0,
-                backgroundColor: Colors.grey[850],
-              ),
+            TextField(
+              controller: emailController,
+              decoration: InputDecoration(labelText: 'Email'),
+            ),
+            SizedBox(height: 16),
+            TextField(
+              controller: passwordController,
+              decoration: InputDecoration(labelText: 'Password'),
+              obscureText: true,
+            ),
+            SizedBox(height: 32),
+            ElevatedButton(
+              onPressed: () {
+                _login(context);
+              },
+              child: Text('Login'),
             ),
           ],
         ),
       ),
     );
+  }
+
+  void _login(BuildContext context) {
+    // Check if email and password match
+    if (emailController.text == 'example@gmail.com' &&
+        passwordController.text == 'hello') {
+      // Navigate to the "/home" route
+      Navigator.pushReplacementNamed(context, '/home');
+    } else {
+      // Display an error message or handle invalid login
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Invalid Login'),
+          content: Text('Please check your email and password.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 }
