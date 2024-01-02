@@ -29,6 +29,23 @@ class HomeScreen extends StatelessWidget {
             child: SingleChildScrollView(
               child: Column(
                 children: [
+                  MaterialButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/advice'); // Navigate to /ucd route
+                    },
+                    child: Text(
+                      'UI/UX ChatBot',
+                      style: TextStyle(
+                        fontSize: 16, // Adjust the font size
+                      ),
+                    ),
+                    color: Colors.grey[850], // Change the background color
+                    textColor: Colors.grey[400], // Change the text color
+                    elevation: 4.0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8), // Add rounded corners
+                    ),
+                  ),
                   Text(
                     "# About UI/UX Simplified:",
                     textAlign: TextAlign.center,

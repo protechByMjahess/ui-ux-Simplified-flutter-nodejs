@@ -12,6 +12,7 @@ import 'Responsivedesign.dart';
 import 'accessibility.dart';
 import 'splash_screen.dart';
 import 'signup.dart';
+import 'putadvise.dart';
 import 'chatbot.dart';
 import 'splachLoader.dart';
 import 'ui.dart';
@@ -52,6 +53,7 @@ class MyApp extends StatelessWidget {
         '/trends': (context) => TrendsPage(),
         '/neumo': (context) => NeumoPage(),
         '/glass': (context) => GlassPage(),
+        '/advice': (context) => PutAdvisePage(),
 
       },
       debugShowCheckedModeBanner: false,
