@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class Signup extends StatefulWidget {
   const Signup({Key? key}) : super(key: key);
@@ -8,7 +10,7 @@ class Signup extends StatefulWidget {
 }
 
 class _SignupState extends State<Signup> {
-  final _fullNameController = TextEditingController();
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -23,7 +25,7 @@ class _SignupState extends State<Signup> {
         child: Column(
           children: [
             TextField(
-              controller: _fullNameController,
+              controller: _nameController,
               decoration: const InputDecoration(
                 labelText: 'Full Name',
               ),
@@ -52,26 +54,41 @@ class _SignupState extends State<Signup> {
     );
   }
 
-  void _handleSignup() {
-    // Implement signup logic here, using the values from the controllers
-    // Example:
+  void _handleSignup() async {
     // Get values from controllers
-    final fullName = _fullNameController.text;
+    final name = _nameController.text;
     final email = _emailController.text;
     final password = _passwordController.text;
 
-    // Log the input values to the console
-    print('Full Name: $fullName');
-    print('Email: $email');
-    print('Password: $password');
+    // Prepare signup data
+    final Map<String, dynamic> signupData = {
+      'name': name, // Adjust to the correct column name in your database
+      'email': email,
+      'password': password,
+    };
 
-    // Validate the input fields
-    // ...
+    try {
+      // Make a POST request to the backend API with JSON data
+      final response = await http.post(
+        Uri.parse('https://advice-xchq.onrender.com/signUp'),
+        headers: {
+          'Content-Type': 'application/json', // Set the content type to JSON
+        },
+        body: jsonEncode(signupData), // Encode the data as JSON
+      );
 
-    // Send the signup data to your server or perform local actions
-    // ...
-
-    // Navigate to a different screen upon successful signup
-    // ...
+      if (response.statusCode == 200) {
+        // Successful signup
+        print('Signup successful');
+        // Add navigation logic here if needed
+      } else {
+        // Handle unsuccessful signup
+        print('Signup failed: ${response.body}');
+        // You might want to display an error message to the user
+      }
+    } catch (error) {
+      // Handle network or other errors
+      print('Error during signup: $error');
+    }
   }
 }
