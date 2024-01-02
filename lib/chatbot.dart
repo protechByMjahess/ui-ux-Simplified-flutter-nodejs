@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'widgets/drawer_widget.dart';
-
 
 class ChatBot extends StatefulWidget {
   const ChatBot({Key? key}) : super(key: key);
@@ -13,42 +13,33 @@ class ChatBot extends StatefulWidget {
 }
 
 class _ChatBotState extends State<ChatBot> {
-  List<String> _tips = [];
   List<String> _currentTips = ['Click "Get UI/UX Design Tip" to get advice.'];
   String _error = '';
 
-  @override
-  void initState() {
-    super.initState();
-    loadTips();
-  }
-
-  void loadTips() async {
+  void getRandomTip() async {
     try {
-      String tipsData = await DefaultAssetBundle.of(context).loadString('assets/tips.json');
-      List<dynamic> tipsList = json.decode(tipsData);
-      _tips = tipsList.cast<String>().toList();
-    } catch (error) {
-      setState(() {
-        _error = 'Error loading tips: $error';
-      });
-    }
-  }
-
-  void getRandomTip() {
-    if (_tips.isNotEmpty) {
-      final random = Random();
-      String newTip = _tips[random.nextInt(_tips.length)];
-
-      // Check if the tip is not already in the list
-      if (!_currentTips.contains(newTip)) {
-        setState(() {
-          _currentTips.add(newTip); // Change here to add the new tip at the end
-        });
+      final response = await http.get(Uri.parse('https://advice-xchq.onrender.com/advice'));
+      if (response.statusCode == 200) {
+        if (response.body.isNotEmpty) {
+          final newTip = json.decode(response.body)['advice'] as String;
+          if (!_currentTips.contains(newTip)) {
+            setState(() {
+              _currentTips.add(newTip);
+            });
+          } else {
+            getRandomTip();
+          }
+        } else {
+          print('Error: Empty response body');
+        }
       } else {
-        // If the tip is already in the list, generate a new one
-        getRandomTip();
+        print('Error: ${response.statusCode}');
       }
+    } catch (error) {
+      print('Error: $error');
+      setState(() {
+        _error = 'Error loading advice: $error';
+      });
     }
   }
 
@@ -87,21 +78,20 @@ class _ChatBotState extends State<ChatBot> {
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child:ElevatedButton(
-                onPressed: getRandomTip, // Remove parentheses
+              child: ElevatedButton(
+                onPressed: getRandomTip,
                 child: const Text(
                   'Get UI/UX Design Tip',
                   style: TextStyle(
-                    fontSize: 16, // Adjust the font size
+                    fontSize: 16,
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.grey[850], // Change the background color
-                  onPrimary: Colors.grey[400], // Change the text color
+                  primary: Colors.grey[850],
+                  onPrimary: Colors.grey[400],
                   elevation: 4.0,
                 ),
               ),
-
             ),
           ],
         ),
