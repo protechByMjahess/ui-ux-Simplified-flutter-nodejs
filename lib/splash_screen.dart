@@ -19,11 +19,17 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _readConfig() async {
     try {
-      final String jsonString = await rootBundle.loadString('assets/config.json');
-      final Map<String, dynamic> config = jsonDecode(jsonString);
+      final String jsonString =
+          await rootBundle.loadString('assets/config.json');
+      final List<dynamic> configList = jsonDecode(jsonString);
 
-      emailController.text = config['email'] ?? '';
-      passwordController.text = config['password'] ?? '';
+      // Assuming the config file contains an array of objects with 'email' and 'password' fields
+      if (configList.isNotEmpty) {
+        final Map<String, dynamic> firstConfig = configList[0];
+
+        emailController.text = firstConfig['email'] ?? '';
+        passwordController.text = firstConfig['password'] ?? '';
+      }
     } catch (e) {
       print('Error reading config file: $e');
     }
@@ -65,37 +71,51 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _login(BuildContext context) async {
     // Read the email and password from the JSON file
-    final String storedEmail = emailController.text;
-    final String storedPassword = passwordController.text;
+    final String enteredEmail = emailController.text;
+    final String enteredPassword = passwordController.text;
 
     try {
-      final String jsonString = await rootBundle.loadString('assets/config.json');
-      final Map<String, dynamic> config = jsonDecode(jsonString);
+      final String jsonString =
+          await rootBundle.loadString('assets/config.json');
+      final List<dynamic> configList = jsonDecode(jsonString);
 
-      final String expectedEmail = config['email'] ?? '';
-      final String expectedPassword = config['password'] ?? '';
+      // Assuming the config file contains an array of objects with 'email' and 'password' fields
+      if (configList.isNotEmpty) {
+        bool isLoginSuccessful = false;
 
-      // Check if the entered email and password match the stored values
-      if (storedEmail == expectedEmail && storedPassword == expectedPassword) {
-        // Navigate to the "/home" route for a successful login
-        Navigator.pushReplacementNamed(context, '/home');
-      } else {
-        // Display an error message or handle invalid login
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text('Invalid Login'),
-            content: Text('Please check your email and password.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text('OK'),
-              ),
-            ],
-          ),
-        );
+        for (var config in configList) {
+          final String expectedEmail = config['email'] ?? '';
+          final String expectedPassword = config['password'] ?? '';
+
+          // Check if the entered email and password match the stored values
+          if (enteredEmail == expectedEmail &&
+              enteredPassword == expectedPassword) {
+            isLoginSuccessful = true;
+            break;
+          }
+        }
+
+        if (isLoginSuccessful) {
+          // Navigate to the "/home" route for a successful login
+          Navigator.pushReplacementNamed(context, '/home');
+        } else {
+          // Display an error message or handle invalid login
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text('Invalid Login'),
+              content: Text('Please check your email and password.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            ),
+          );
+        }
       }
     } catch (e) {
       print('Error reading config file: $e');
