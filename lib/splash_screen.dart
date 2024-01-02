@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class SplashScreen extends StatefulWidget {
@@ -10,30 +10,6 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    _readConfig();
-  }
-
-  Future<void> _readConfig() async {
-    try {
-      final String jsonString =
-          await rootBundle.loadString('assets/config.json');
-      final List<dynamic> configList = jsonDecode(jsonString);
-
-      // Assuming the config file contains an array of objects with 'email' and 'password' fields
-      if (configList.isNotEmpty) {
-        final Map<String, dynamic> firstConfig = configList[0];
-
-        emailController.text = firstConfig['email'] ?? '';
-        passwordController.text = firstConfig['password'] ?? '';
-      }
-    } catch (e) {
-      print('Error reading config file: $e');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,29 +39,23 @@ class _SplashScreenState extends State<SplashScreen> {
               },
               child: Text('Login'),
             ),
-
-
             MaterialButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/signup'); // Navigate to /ucd route
-                },
-                child: Text(
-                  'Next chapter',
-                  style: TextStyle(
-                    fontSize: 16, // Adjust the font size
-                  ),
-                ),
-                color: Colors.grey[850], // Change the background color
-                textColor: Colors.grey[400], // Change the text color
-                elevation: 4.0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8), // Add rounded corners
+              onPressed: () {
+                Navigator.pushNamed(context, '/signup');
+              },
+              child: Text(
+                'Next chapter',
+                style: TextStyle(
+                  fontSize: 16,
                 ),
               ),
-
-
-
-
+              color: Colors.grey[850],
+              textColor: Colors.grey[400],
+              elevation: 4.0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
           ],
         ),
       ),
@@ -93,55 +63,46 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _login(BuildContext context) async {
-    // Read the email and password from the JSON file
     final String enteredEmail = emailController.text;
     final String enteredPassword = passwordController.text;
 
     try {
-      final String jsonString =
-          await rootBundle.loadString('assets/config.json');
-      final List<dynamic> configList = jsonDecode(jsonString);
+      final Map<String, dynamic> loginData = {
+        'email': enteredEmail,
+        'password': enteredPassword,
+      };
 
-      // Assuming the config file contains an array of objects with 'email' and 'password' fields
-      if (configList.isNotEmpty) {
-        bool isLoginSuccessful = false;
+      final response = await http.post(
+        Uri.parse('https://advice-xchq.onrender.com/login'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(loginData),
+      );
 
-        for (var config in configList) {
-          final String expectedEmail = config['email'] ?? '';
-          final String expectedPassword = config['password'] ?? '';
-
-          // Check if the entered email and password match the stored values
-          if (enteredEmail == expectedEmail &&
-              enteredPassword == expectedPassword) {
-            isLoginSuccessful = true;
-            break;
-          }
-        }
-
-        if (isLoginSuccessful) {
-          // Navigate to the "/home" route for a successful login
-          Navigator.pushReplacementNamed(context, '/home');
-        } else {
-          // Display an error message or handle invalid login
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: Text('Invalid Login'),
-              content: Text('Please check your email and password.'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text('OK'),
-                ),
-              ],
-            ),
-          );
-        }
+      if (response.statusCode == 200) {
+        // Successful login
+        Navigator.pushReplacementNamed(context, '/home');
+      } else {
+        // Display an error message or handle invalid login
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Invalid Login'),
+            content: Text('Please check your email and password.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('OK'),
+              ),
+            ],
+          ),
+        );
       }
     } catch (e) {
-      print('Error reading config file: $e');
+      print('Error during login: $e');
     }
   }
 }
