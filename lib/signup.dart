@@ -55,9 +55,15 @@ class _SignupState extends State<Signup> {
   void _handleSignup() {
     // Implement signup logic here, using the values from the controllers
     // Example:
+    // Get values from controllers
     final fullName = _fullNameController.text;
     final email = _emailController.text;
     final password = _passwordController.text;
+
+    // Log the input values to the console
+    print('Full Name: $fullName');
+    print('Email: $email');
+    print('Password: $password');
 
     // Validate the input fields
     // ...
