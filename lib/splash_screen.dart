@@ -63,6 +63,29 @@ class _SplashScreenState extends State<SplashScreen> {
               },
               child: Text('Login'),
             ),
+
+
+            MaterialButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/signup'); // Navigate to /ucd route
+                },
+                child: Text(
+                  'Next chapter',
+                  style: TextStyle(
+                    fontSize: 16, // Adjust the font size
+                  ),
+                ),
+                color: Colors.grey[850], // Change the background color
+                textColor: Colors.grey[400], // Change the text color
+                elevation: 4.0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8), // Add rounded corners
+                ),
+              ),
+
+
+
+
           ],
         ),
       ),

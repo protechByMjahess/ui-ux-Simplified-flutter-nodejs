@@ -11,11 +11,13 @@ import 'userTesting.dart';
 import 'Responsivedesign.dart';
 import 'accessibility.dart';
 import 'splash_screen.dart';
+import 'signup.dart';
 import 'chatbot.dart';
 import 'ui.dart';
 import 'trends/latesttrends.dart';
 import 'trends/neumo.dart';
 import 'trends/glass.dart';
+
 
 void main() => runApp(MyApp());
 
@@ -31,6 +33,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/splash',
       routes: {
         '/splash': (context) => SplashScreen(),
+        '/signup': (context) => Signup(),
         '/home': (context) => HomeScreen(),
         '/ui': (context) => Ui(),
         '/ucd': (context) => AboutScreen(),
