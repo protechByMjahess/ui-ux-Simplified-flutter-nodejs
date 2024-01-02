@@ -13,6 +13,7 @@ import 'accessibility.dart';
 import 'splash_screen.dart';
 import 'signup.dart';
 import 'chatbot.dart';
+import 'splachLoader.dart';
 import 'ui.dart';
 import 'trends/latesttrends.dart';
 import 'trends/neumo.dart';
@@ -30,8 +31,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue, // Use different shades of blue
       ),
 
-      initialRoute: '/splash',
+      initialRoute: '/loader',
       routes: {
+        '/loader': (context) => SplashLoader(),
         '/splash': (context) => SplashScreen(),
         '/signup': (context) => Signup(),
         '/home': (context) => HomeScreen(),
